@@ -33,7 +33,7 @@ public class ProductInfoServiceImpl implements ProductInfoService {
     @Override
     public Page<ProductInfo> findAll(Pageable pageable) {
 
-        return infoRepository.findAll(PageRequest.of(1,1 ));
+        return infoRepository.findAll(PageRequest.of(1, 1));
     }
 
 
@@ -44,7 +44,15 @@ public class ProductInfoServiceImpl implements ProductInfoService {
 
     @Override
     public void increaseStock(List<CartDTO> cartDTOList) {
-
+        for (CartDTO cartDTO : cartDTOList) {
+            ProductInfo productInfo = infoRepository.findById(cartDTO.getProductId()).get();
+            if (productInfo == null) { //商品不存在
+                throw new SellException(ResultEnum.PRODUCT_NO_EXIST);
+            }
+            Integer result = productInfo.getProductStock() + cartDTO.getProductQuantity();
+            productInfo.setProductStock(result);
+            infoRepository.save(productInfo);
+        }
     }
 
     @Override

@@ -2,6 +2,8 @@ package com.zcj.service.impl;
 
 import com.zcj.domain.OrderDetail;
 import com.zcj.dto.OrderMasterDTO;
+import com.zcj.enums.OrderStatusEnum;
+import com.zcj.enums.PayStatusEnum;
 import com.zcj.service.OrderMasterService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
@@ -15,7 +17,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -60,28 +61,34 @@ public class OrderMasterServiceImplTest {
         Assert.assertNotNull(result);
     }
 
-
     @Test
-    public void findList() {
+    public void findOrderListByOpenId() {
         Page<OrderMasterDTO> orderMasterDTOPage = orderMasterService.findOrderListByOpenId("12343132132", PageRequest.of(1, 1));
         log.info("【订单分页信息】result{}",orderMasterDTOPage.getContent(),orderMasterDTOPage.getTotalElements());
         Assert.assertNotNull(orderMasterDTOPage);
     }
 
-    @Test
-    public void findOrderListByOpenId() {
-    }
-
+    /**
+     * 取消订单
+     */
     @Test
     public void cancel() {
-
+        OrderMasterDTO orderMasterDTO = orderMasterService.findOne("1140884725372567552");
+        orderMasterService.cancel(orderMasterDTO);
+        Assert.assertEquals(OrderStatusEnum.CANCEL.getCode(),orderMasterDTO.getOrderStatus());  //判断状态是否相等
     }
 
+    /**
+     * 结束订单
+     */
     @Test
     public void finish() {
 
     }
 
+    /**
+     * 支付订单
+     */
     @Test
     public void paid() {
 
