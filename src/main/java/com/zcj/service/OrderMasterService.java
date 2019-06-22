@@ -1,6 +1,5 @@
 package com.zcj.service;
 
-import com.zcj.domain.OrderMaster;
 import com.zcj.dto.OrderMasterDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,14 +10,7 @@ public interface OrderMasterService {
      *
      * @return
      */
-    OrderMaster findOne(String orderId);
-
-    /**
-     * 查询所有订单信息 并分页
-     *
-     * @return
-     */
-    Page<OrderMaster> findList(Pageable pageable);
+    OrderMasterDTO findOne(String orderId);
 
     /**
      * 创建订单

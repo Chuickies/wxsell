@@ -39,9 +39,9 @@ public class OrderMasterRepositoryTest {
     /**
      * 根据openId查询信息
      */
-    @Test
-    public void findByBuyerOpenid() {
-        List<OrderMaster> masters = repository.findByBuyerOpenid("12343132132", PageRequest.of(1, 2));
-        masters.stream().forEach((s)->{System.out.println(s);});
-    }
+//    @Test
+//    public void findByBuyerOpenid() {
+//        List<OrderMaster> masters = repository.findByBuyerOpenid("12343132132", PageRequest.of(1, 2));
+//        masters.stream().forEach((s)->{System.out.println(s);});
+//    }
 }
