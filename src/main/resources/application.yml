@@ -2,15 +2,16 @@ spring:
   datasource:
     driverClassName: com.mysql.jdbc.Driver
     username: root
-    password: 123456
-    url: jdbc:mysql://192.168.5.38:3306/wxsell?characterEncoding=utf8&useSSL=true
+    password: root
+    url: jdbc:mysql://192.168.1.117:3306/shiro?characterEncoding=utf8&useSSL=true
   jpa:
     show-sql: true
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 server:
+  port: 8087
   servlet:
     context-path: /sell
 
 wechat:
-  mpAppId : wx3bdb1192c22883f3
-  mpAppSecret : db9d6b88821df403e5ff11742e799105
+  mpAppId : wxcde50a847ef1d864
+  mpAppSecret : 2e242781221f13761b539a3392267a8a

@@ -1,6 +1,5 @@
 package com.zcj.config;
 
-import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.mp.api.WxMpConfigStorage;
 import me.chanjar.weixin.mp.api.WxMpInMemoryConfigStorage;
 import me.chanjar.weixin.mp.api.WxMpService;
