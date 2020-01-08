@@ -2,13 +2,15 @@ package com.zcj.controller;
 
 import com.google.gson.Gson;
 import com.zcj.domain.AccessToken;
+import com.zcj.domain.WxJsapiSignature;
 import com.zcj.enums.ResultEnum;
 import com.zcj.exception.AesException;
 import com.zcj.exception.SellException;
-
 import com.zcj.utils.CheckUtil;
 import com.zcj.utils.GenerateStrUtils;
+import com.zcj.utils.GetJsSdkSignatureUtils;
 import com.zcj.utils.SHA1;
+import com.zcj.vo.ResultVo;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.api.WxConsts;
 import me.chanjar.weixin.common.exception.WxErrorException;
@@ -16,9 +18,12 @@ import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.result.WxMpOAuth2AccessToken;
 import me.chanjar.weixin.mp.bean.result.WxMpUser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,13 +31,21 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 import java.net.URLEncoder;
 
-@Controller
+@RestController
 @RequestMapping(value = "/wechat")
 @Slf4j
 public class WeChatController {
     @Autowired
     private WxMpService wxMpService;
 
+    @Value("${wechat.mpAppId}")
+    private String appId;
+
+    @Value("${wechat.mpAppSecret}")
+    private String secrete;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
     @GetMapping("auth")
     public void getCodeAndToken(@RequestParam("code") String code) throws AesException {
         log.info("进入方法获取code......");
@@ -80,7 +93,6 @@ public class WeChatController {
         log.info("wxMpUser={}",wxMpUser);
         String openId = wxMpOAuth2AccessToken.getOpenId();
         return "redirect:"+returnUrl+"?openId"+openId;
-
     }
 
     /**
@@ -118,6 +130,36 @@ public class WeChatController {
             log.info("测试微信公众号的接口配置信息发生异常：", e);
             return false;
         }
+    }
+
+    @GetMapping("/get/signature")
+    public ResultVo GetWxJsapiSignature(@RequestParam String url){
+        ResultVo resultVo = new ResultVo();
+        WxJsapiSignature wxJsapiSignature = new WxJsapiSignature();
+        String access_token = GetJsSdkSignatureUtils.getAccess_token(appId, secrete);
+        log.info("access-token={}",access_token);
+        //String ticket = (String) redisTemplate.opsForValue().get(appId + "_ticket");
+        //if(StringUtils.isEmpty(ticket)){  // 缓存中没有票据，通过token获取票据
+        //    String access_ticket = GetJsSdkSignatureUtils.getAccess_ticket(access_token);
+        //    log.info("access_ticket={}",access_ticket);
+        //    redisTemplate.opsForValue().set(appId + "_ticket",access_ticket);
+        //}
+        //String access_ticket = GetJsSdkSignatureUtils.getAccess_ticket(access_token);
+        //log.info("access_ticket={}",access_ticket);
+        String ticket="bxLdikRXVbTPdHSM05e5u1KzgEYU1Jm--3rld9GnlX8AFCQ6HANuK0b_u7TxNVQ8Ghfvpf_vouEvL23FKeUUKg";
+        Long timeStamp=System.currentTimeMillis()/1000L;
+        String noncestr = GenerateStrUtils.generateRandomStr(16);
+        String signature = SHA1.genWithAmple(ticket, timeStamp + "", noncestr,url);
+        wxJsapiSignature.setAppId(appId);
+        wxJsapiSignature.setNonceStr(noncestr);
+        wxJsapiSignature.setSignature(signature);
+        wxJsapiSignature.setTimestamp(timeStamp);
+        wxJsapiSignature.setUrl(url);
+        log.info("wxJsapiSignature={}",wxJsapiSignature);
+        resultVo.setData(wxJsapiSignature);
+        resultVo.setCode(0);
+        resultVo.setMessage("获取数据成功！！！");
+        return resultVo;
     }
 
 

@@ -29,7 +29,7 @@ public class GenerateStrUtils {
             //System.out.println(RANDOM_LENGTH2 + "位随机数:" + randomStr);
             //randomStr = generateRandomStr(RANDOM_LENGTH3);
             //System.out.println(RANDOM_LENGTH3 + "位随机数:" + randomStr);
-            System.out.println(generateRandomStr(RANDOM_LENGTH0));
+            //System.out.println(generateRandomStr(RANDOM_LENGTH0));
         }
 
         public static String generateRandomStr(int length) {
